@@ -1,0 +1,44 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.env/
+.venv/
+venv/
+env/
+
+# Django specific
+*.log
+local_settings.py
+db.sqlite3
+
+# Production static files
+/static/
+media/
+
+# IDEs and editors
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Python cache
+.pytest_cache/
+.cache/
+
+# Migrations (optional, if you want to ignore migration files)
+# /migrations/
+# but typically, you include migrations in version control
+# so comment out the above lines if you want to commit migrations
+
+# Environment variables
+.env
+
+# Others
+*.sqlite3
