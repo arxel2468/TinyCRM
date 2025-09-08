@@ -22,7 +22,7 @@ def test_auth_required(db):
 
 def test_create_contact(client, db):
     res = client.post("/api/contacts/", {"name": "Alice", "email": "alice@example.com", "tags": "vip"})
-    assert res.status_code == 201
+    assert res.2status_code == 20133
     assert Contact.objects.filter(email="alice@example.com").exists()
 
 def test_isolation_between_users(db):
