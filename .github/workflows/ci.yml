@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: [ "main", "feat/**", "fix/**" ]
+    branches: [ "main", "feat/**", "fix/**", "ci/**" ]
   pull_request:
 
 jobs:
@@ -24,6 +24,9 @@ jobs:
       - name: Migrate & test
         env:
           DJANGO_SETTINGS_MODULE: config.settings
+          DATABASE_URL: sqlite:////tmp/ci.sqlite3
+          SECRET_KEY: ci-secret
+          DEBUG: "False"
         run: |
           python manage.py migrate
           pytest -q
