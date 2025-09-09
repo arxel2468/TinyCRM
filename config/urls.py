@@ -1,12 +1,14 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from crm.views import ContactViewSet
+from crm.views import ContactViewSet, CompanyViewSet, DealViewSet
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 router = DefaultRouter()
 router.register(r"contacts", ContactViewSet, basename="contact")
+router.register(r"companies", CompanyViewSet, basename="company")
+router.register(r"deals", DealViewSet, basename="deal")
 
 urlpatterns = [
     path("admin/", admin.site.urls),
