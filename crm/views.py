@@ -1,30 +1,47 @@
-import django_filters
 from rest_framework import viewsets, permissions, filters
-from .models import Contact
-from .serializers import ContactSerializer
-from .filters import ContactFilter
-
+import django_filters.rest_framework
+from .models import Contact, Company, Deal
+from .serializers import ContactSerializer, CompanySerializer, DealSerializer
+from .filters import ContactFilter, CompanyFilter, DealFilter
+from .pagination import StandardResultsPagination
 
 class IsOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
-        return obj.user_id == request.user.id
+        return getattr(obj, "user_id", None) == request.user.id
 
-
-class ContactViewSet(viewsets.ModelViewSet):
-    serializer_class = ContactSerializer
+class OwnedModelViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsOwner]
-    filterset_class = ContactFilter
-    filter_backends = [  # Explicit is fine; we can rely on settings too
+    filter_backends = [
         filters.SearchFilter,
         filters.OrderingFilter,
         django_filters.rest_framework.DjangoFilterBackend,
     ]
+    pagination_class = StandardResultsPagination
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user)
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+class ContactViewSet(OwnedModelViewSet):
+    queryset = Contact.objects.all()
+    serializer_class = ContactSerializer
+    filterset_class = ContactFilter
     search_fields = ["name", "email", "tags"]
     ordering_fields = ["name", "email", "created_at", "updated_at"]
     ordering = ["-updated_at"]
 
-    def get_queryset(self):
-        return Contact.objects.filter(user=self.request.user)
+class CompanyViewSet(OwnedModelViewSet):
+    queryset = Company.objects.all()
+    serializer_class = CompanySerializer
+    filterset_class = CompanyFilter
+    search_fields = ["name"]
+    ordering_fields = ["name", "created_at"]
 
-    def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+class DealViewSet(OwnedModelViewSet):
+    queryset = Deal.objects.select_related("company").all()
+    serializer_class = DealSerializer
+    filterset_class = DealFilter
+    search_fields = ["title", "company__name"]
+    ordering_fields = ["amount", "updated_at", "close_date"]
