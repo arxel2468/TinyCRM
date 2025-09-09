@@ -50,7 +50,7 @@ class DealViewSet(OwnedModelViewSet):
     ordering_fields = ["amount", "updated_at", "close_date"]
 
 class MeView(APIView): 
-	permission_classes=[IsAuthenticated]; 
+	permission_classes=[IsAuthenticated] 
 	
 	def get(self, request): 
 		return JsonResponse({"username": request.user.username, "email": request.user.email})
