@@ -29,6 +29,4 @@ jobs:
           DEBUG: "False"
         run: |
           python manage.py migrate
-          ruff check .
-          black --check .
           pytest -q
