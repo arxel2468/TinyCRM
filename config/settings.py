@@ -169,5 +169,6 @@ CORS_ALLOW_ALL_ORIGINS = True
 # Optional: set via env in Render
 CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if o.strip()]
 
+
 # If behind a proxy (Render), let Django know it's HTTPS
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
