@@ -1,5 +1,8 @@
 from rest_framework import viewsets, permissions, filters
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
 import django_filters.rest_framework
+from django.http import JsonResponse
 from .models import Contact, Company, Deal
 from .serializers import ContactSerializer, CompanySerializer, DealSerializer
 from .filters import ContactFilter, CompanyFilter, DealFilter
@@ -45,3 +48,9 @@ class DealViewSet(OwnedModelViewSet):
     filterset_class = DealFilter
     search_fields = ["title", "company__name"]
     ordering_fields = ["amount", "updated_at", "close_date"]
+
+class MeView(APIView): 
+	permission_classes=[IsAuthenticated]; 
+	
+	def get(self, request): 
+		return JsonResponse({"username": request.user.username, "email": request.user.email})

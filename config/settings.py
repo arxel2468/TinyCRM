@@ -154,12 +154,16 @@ REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "crm.pagination.StandardResultsPagination",
     "PAGE_SIZE": 20,
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.UserRateThrottle"],
+    "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.UserRateThrottle"],
 }
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "TinyCRM API",
     "DESCRIPTION": "Contacts and deals API",
     "VERSION": "0.1.0",
+    "SECURITY": [{"bearerAuth": []}],
+    "COMPONENTS": {"securitySchemes": {"bearerAuth": {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}}},
 }
 
 # Dev CORS – allow everything for now (we'll tighten later)
@@ -172,3 +176,5 @@ CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.getenv("CSRF_TRUSTED_ORIGINS", "")
 
 # If behind a proxy (Render), let Django know it's HTTPS
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+LOGGING = { "version": 1, "disable_existing_loggers": False, "handlers": {"console": {"class": "logging.StreamHandler"}}, "root": {"handlers": ["console"], "level": "INFO"} }
