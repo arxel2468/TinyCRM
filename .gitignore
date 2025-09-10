@@ -42,3 +42,4 @@ Thumbs.db
 
 # Others
 *.sqlite3
+.fuse_hidden*

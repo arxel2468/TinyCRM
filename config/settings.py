@@ -155,6 +155,7 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 20,
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.UserRateThrottle"],
+    "DEFAULT_THROTTLE_RATES":{"user":"1000/day"},
 }
 
 SPECTACULAR_SETTINGS = {
@@ -166,7 +167,7 @@ SPECTACULAR_SETTINGS = {
 }
 
 # Dev CORS – allow everything for now (we'll tighten later)
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_ALL_ORIGINS = not bool(CORS_ALLOWED_ORIGINS)
 
 
 # Optional: set via env in Render
