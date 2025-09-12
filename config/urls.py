@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from crm.views import ContactViewSet, CompanyViewSet, DealViewSet, MeView
+from crm.views import ContactViewSet, CompanyViewSet, DealViewSet, MeView, DealsExportCSV, DealsStatsView
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
@@ -18,4 +18,6 @@ urlpatterns = [
     path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("api/", include(router.urls)),
     path("api/me/", MeView.as_view()),
+    path("api/exports/deals.csv", DealsExportCSV.as_view(), name="deals_export_csv"),
+    path("api/stats/deals/", DealsStatsView.as_view(), name="deals_stats"),
 ]
