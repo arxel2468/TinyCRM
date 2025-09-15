@@ -5,7 +5,7 @@ from crm.services.digest import compute_deals_summary, deals_csv
 
 def test_compute_summary_and_csv(db):
     U = get_user_model()
-    u = U.obects.create_user(username="u1", password="pass")
+    u = U.objects.create_user(username="u1", password="pass")
     c = Company.objects.create(user=u,name="Acme")
     Deal.objects.create(user=u, company=c, title="A", amount=100, stage="new")
     Deal.objects.create(user=u, company=c, title="B", amount=200, stage="won")
