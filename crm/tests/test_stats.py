@@ -8,7 +8,8 @@ def auth_client(db):
     U = get_user_model()
     u = U.objects.create_user(username="u1", password="pass12345")
     from rest_framework_simplejwt.tokens import RefreshToken
-    c = APIClient(); c.credentials(HTTP_AUTHORIZATION=f"Bearer {RefreshToken.for_user(u).access_token}")
+    c = APIClient()
+    c.credentials(HTTP_AUTHORIZATION=f"Bearer {RefreshToken.for_user(u).access_token}")
     return c, u
 
 def test_deals_stats(auth_client, db):

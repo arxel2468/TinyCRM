@@ -9,7 +9,8 @@ def auth_client(db):
     user = U.objects.create_user(username="u1", password="pass12345")
     from rest_framework_simplejwt.tokens import RefreshToken
     token = str(RefreshToken.for_user(user).access_token)
-    client = APIClient(); client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
+    client = APIClient()
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {token}")
     return client, user
 
 def test_deals_csv_export(auth_client, db):
