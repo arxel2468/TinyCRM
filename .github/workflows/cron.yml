@@ -1,0 +1,17 @@
+name: Weekly Digest
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"   # Mondays 06:00 UTC
+  workflow_dispatch:
+
+jobs:
+  trigger:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call secure digest endpoint
+        run: |
+          curl -s -X POST "$CRON_URL" -H "X-CRON-KEY: $CRON_SECRET"
+    env:
+      CRON_URL: ${{ secrets.CRON_URL }}
+      CRON_SECRET: ${{ secrets.CRON_SECRET }}
