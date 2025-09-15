@@ -24,7 +24,9 @@ class Contact(models.Model):
 
 
 class Company(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="companies")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="companies"
+    )
     name = models.CharField(max_length=150)
     website = models.URLField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -46,7 +48,9 @@ class Deal(models.Model):
         WON = "won", "Won"
         LOST = "lost", "Lost"
 
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="deals")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="deals"
+    )
     company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name="deals")
     title = models.CharField(max_length=150)
     amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)

@@ -14,9 +14,11 @@ from .pagination import StandardResultsPagination
 import csv
 from io import StringIO
 
+
 class IsOwner(permissions.BasePermission):
     def has_object_permission(self, request, view, obj):
         return getattr(obj, "user_id", None) == request.user.id
+
 
 class OwnedModelViewSet(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAuthenticated, IsOwner]
@@ -33,6 +35,7 @@ class OwnedModelViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
 
+
 class ContactViewSet(OwnedModelViewSet):
     queryset = Contact.objects.all()
     serializer_class = ContactSerializer
@@ -41,12 +44,14 @@ class ContactViewSet(OwnedModelViewSet):
     ordering_fields = ["name", "email", "created_at", "updated_at"]
     ordering = ["-updated_at"]
 
+
 class CompanyViewSet(OwnedModelViewSet):
     queryset = Company.objects.all()
     serializer_class = CompanySerializer
     filterset_class = CompanyFilter
     search_fields = ["name"]
     ordering_fields = ["name", "created_at"]
+
 
 class DealViewSet(OwnedModelViewSet):
     queryset = Deal.objects.select_related("company").all()
@@ -55,18 +60,25 @@ class DealViewSet(OwnedModelViewSet):
     search_fields = ["title", "company__name"]
     ordering_fields = ["amount", "updated_at", "close_date"]
 
-class MeView(APIView): 
-	permission_classes=[IsAuthenticated] 
-	
-	def get(self, request): 
-		return Response({"username": request.user.username, "email": request.user.email})
+
+class MeView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return Response(
+            {"username": request.user.username, "email": request.user.email}
+        )
 
 
 class DealsExportCSV(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        qs = Deal.objects.filter(user=request.user).select_related("company").order_by("-updated_at")
+        qs = (
+            Deal.objects.filter(user=request.user)
+            .select_related("company")
+            .order_by("-updated_at")
+        )
         # Optional filters
         min_amount = request.GET.get("min_amount")
         if min_amount:
@@ -74,13 +86,36 @@ class DealsExportCSV(APIView):
 
         buffer = StringIO()
         writer = csv.writer(buffer)
-        writer.writerow(["id", "title", "amount", "stage", "company", "close_date", "created_at", "updated_at"])
+        writer.writerow(
+            [
+                "id",
+                "title",
+                "amount",
+                "stage",
+                "company",
+                "close_date",
+                "created_at",
+                "updated_at",
+            ]
+        )
         for d in qs.iterator():
-            writer.writerow([d.id, d.title, d.amount, d.stage, d.company.name, d.close_date or "", d.created_at, d.updated_at])
+            writer.writerow(
+                [
+                    d.id,
+                    d.title,
+                    d.amount,
+                    d.stage,
+                    d.company.name,
+                    d.close_date or "",
+                    d.created_at,
+                    d.updated_at,
+                ]
+            )
 
         resp = HttpResponse(buffer.getvalue(), content_type="text/csv")
         resp["Content-Disposition"] = 'attachment; filename="deals.csv"'
         return resp
+
 
 class DealsStatsView(APIView):
     permission_classes = [IsAuthenticated]
@@ -92,6 +127,10 @@ class DealsStatsView(APIView):
             days = 30
         since = timezone.now() - timedelta(days=days)
         qs = Deal.objects.filter(user=request.user, created_at__gte=since)
-        by_stage = list(qs.values("stage").annotate(count=Count("id"), amount=Sum("amount")).order_by("stage"))
+        by_stage = list(
+            qs.values("stage")
+            .annotate(count=Count("id"), amount=Sum("amount"))
+            .order_by("stage")
+        )
         totals = qs.aggregate(count=Count("id"), amount=Sum("amount"))
         return Response({"range_days": days, "by_stage": by_stage, "totals": totals})

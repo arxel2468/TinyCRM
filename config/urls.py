@@ -6,7 +6,14 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from crm.management.commands.send_weekly_deals_digest import Command as DigestCmd
 from rest_framework.routers import DefaultRouter
-from crm.views import ContactViewSet, CompanyViewSet, DealViewSet, MeView, DealsExportCSV, DealsStatsView
+from crm.views import (
+    ContactViewSet,
+    CompanyViewSet,
+    DealViewSet,
+    MeView,
+    DealsExportCSV,
+    DealsStatsView,
+)
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
@@ -22,7 +29,6 @@ class RunDigestView(APIView):
             return HttpResponseForbidden("Forbidden")
         DigestCmd().handle()
         return Response({"status": "ok"})
-
 
 
 router = DefaultRouter()

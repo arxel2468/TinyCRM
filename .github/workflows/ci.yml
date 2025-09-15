@@ -17,27 +17,15 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: Prepare env
-        run: |
-          cp .env.example .env
-          sed -i 's/DEBUG=True/DEBUG=False/g' .env
       - name: Lint
         run: |
           ruff check .
           black --check .
-      - name: Test with coverage
-        env:
-          DJANGO_SETTINGS_MODULE: config.settings
-          DATABASE_URL: sqlite:////tmp/ci.sqlite3
-          SECRET_KEY: ci-secret
-        run: |
-          pytest --cov=crm --cov-report=term-missing -q
-      - name: Migrate & test
+      - name: Test (SQLite) with coverage
         env:
           DJANGO_SETTINGS_MODULE: config.settings
           DATABASE_URL: sqlite:////tmp/ci.sqlite3
           SECRET_KEY: ci-secret
           DEBUG: "False"
         run: |
-          python manage.py migrate
-          pytest -q
+          pytest --cov=crm --cov-report=term-missing -q

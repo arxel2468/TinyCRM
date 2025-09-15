@@ -3,6 +3,7 @@ from django.contrib.auth import get_user_model
 from crm.services.digest import compute_deals_summary, deals_csv
 from crm.emails import send_digest_email
 
+
 class Command(BaseCommand):
     help = "Send weekly deals digest (CSV + summary) to users with an email"
 

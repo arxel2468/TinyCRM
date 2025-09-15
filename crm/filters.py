@@ -24,6 +24,7 @@ class ContactFilter(django_filters.FilterSet):
         model = Contact
         fields = ["name", "email", "tags", "created_after", "created_before"]
 
+
 class CompanyFilter(django_filters.FilterSet):
     name = django_filters.CharFilter(lookup_expr="icontains")
 
@@ -42,4 +43,3 @@ class DealFilter(django_filters.FilterSet):
     class Meta:
         model = Deal
         fields = ["stage"]
-

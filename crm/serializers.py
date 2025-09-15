@@ -7,7 +7,7 @@ class ContactSerializer(serializers.ModelSerializer):
         model = Contact
         fields = ["id", "name", "email", "tags", "created_at", "updated_at"]
         read_only_fields = ["id", "created_at", "updated_at"]
- 
+
 
 class CompanySerializer(serializers.ModelSerializer):
     class Meta:
@@ -40,4 +40,5 @@ class DealSerializer(serializers.ModelSerializer):
         request = self.context.get("request")
         if request and request.user and request.user.is_authenticated:
             from .models import Company
+
             self.fields["company"].queryset = Company.objects.filter(user=request.user)

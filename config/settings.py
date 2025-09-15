@@ -1,4 +1,3 @@
-
 import os
 from pathlib import Path
 from dotenv import load_dotenv
@@ -32,7 +31,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: don't run with debug turned on in production!
 SECRET_KEY = os.getenv("SECRET_KEY", "dev-insecure-key")
 DEBUG = os.getenv("DEBUG", "True") == "True"
-ALLOWED_HOSTS = [h.strip() for h in os.getenv("ALLOWED_HOSTS", "*").split(",") if h.strip()]
+ALLOWED_HOSTS = [
+    h.strip() for h in os.getenv("ALLOWED_HOSTS", "*").split(",") if h.strip()
+]
 
 
 # Application definition
@@ -157,7 +158,7 @@ REST_FRAMEWORK = {
     "PAGE_SIZE": 20,
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.UserRateThrottle"],
-    "DEFAULT_THROTTLE_RATES":{"user":"1000/day"},
+    "DEFAULT_THROTTLE_RATES": {"user": "1000/day"},
 }
 
 REST_FRAMEWORK["EXCEPTION_HANDLER"] = "crm.exceptions.custom_exception_handler"
@@ -167,25 +168,40 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "Contacts and deals API",
     "VERSION": "0.1.0",
     "SECURITY": [{"bearerAuth": []}],
-    "COMPONENTS": {"securitySchemes": {"bearerAuth": {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}}},
+    "COMPONENTS": {
+        "securitySchemes": {
+            "bearerAuth": {"type": "http", "scheme": "bearer", "bearerFormat": "JWT"}
+        }
+    },
 }
 
-CORS_ALLOWED_ORIGINS = [o.strip() for o in os.getenv("CORS_ALLOWED_ORIGINS","").split(",") if o.strip()]
+CORS_ALLOWED_ORIGINS = [
+    o.strip() for o in os.getenv("CORS_ALLOWED_ORIGINS", "").split(",") if o.strip()
+]
 
 # Dev CORS – allow everything for now (we'll tighten later)
 CORS_ALLOW_ALL_ORIGINS = not bool(CORS_ALLOWED_ORIGINS)
 
 
 # Optional: set via env in Render
-CSRF_TRUSTED_ORIGINS = [o.strip() for o in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if o.strip()]
+CSRF_TRUSTED_ORIGINS = [
+    o.strip() for o in os.getenv("CSRF_TRUSTED_ORIGINS", "").split(",") if o.strip()
+]
 
 
 # If behind a proxy (Render), let Django know it's HTTPS
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-LOGGING = { "version": 1, "disable_existing_loggers": False, "handlers": {"console": {"class": "logging.StreamHandler"}}, "root": {"handlers": ["console"], "level": "INFO"} }
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {"console": {"class": "logging.StreamHandler"}},
+    "root": {"handlers": ["console"], "level": "INFO"},
+}
 
-EMAIL_BACKEND = os.getenv("EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend")
+EMAIL_BACKEND = os.getenv(
+    "EMAIL_BACKEND", "django.core.mail.backends.console.EmailBackend"
+)
 EMAIL_HOST = os.getenv("EMAIL_HOST", "")
 EMAIL_PORT = int(os.getenv("EMAIL_PORT", "587"))
 EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER", "")

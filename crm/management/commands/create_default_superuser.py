@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
 import os
 
+
 class Command(BaseCommand):
     help = "Create default superuser if not exists, using DJANGO_SUPERUSER_* env vars."
 
