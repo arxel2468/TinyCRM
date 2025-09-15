@@ -161,7 +161,7 @@ REST_FRAMEWORK = {
     "DEFAULT_THROTTLE_RATES": {"user": "1000/day"},
 }
 
-REST_FRAMEWORK["EXCEPTION_HANDLER"] = "crm.exceptions.custom_exception_handler"
+REST_FRAMEWORK["EXCEPTION_HANDLER"] = "config.exceptions.custom_exception_handler"
 
 SPECTACULAR_SETTINGS = {
     "TITLE": "TinyCRM API",
