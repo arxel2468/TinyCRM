@@ -1,6 +1,7 @@
+import os
+from django.http import HttpResponse, HttpResponseForbidden
 from django.contrib import admin
 from django.urls import path, include
-from django.http import HttpResponseForbidden
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from crm.management.commands.send_weekly_deals_digest import Command as DigestCmd
