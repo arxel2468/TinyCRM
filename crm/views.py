@@ -2,17 +2,21 @@ from rest_framework import viewsets, permissions, filters
 from rest_framework.views import APIView
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.parsers import MultiPartParser, FormParser
 import django_filters.rest_framework
 from django.http import HttpResponse
 from django.db.models import Count, Sum
 from django.utils import timezone
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError as DjangoValidationError
+from rest_framework import status
 from datetime import timedelta
 from .models import Contact, Company, Deal
 from .serializers import ContactSerializer, CompanySerializer, DealSerializer
 from .filters import ContactFilter, CompanyFilter, DealFilter
 from .pagination import StandardResultsPagination
 import csv
-from io import StringIO
+from io import StringIO, TextIOWrapper
 
 
 class IsOwner(permissions.BasePermission):
@@ -134,3 +138,42 @@ class DealsStatsView(APIView):
         )
         totals = qs.aggregate(count=Count("id"), amount=Sum("amount"))
         return Response({"range_days": days, "by_stage": by_stage, "totals": totals})
+
+
+class ContactsImportCSV(APIView):
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser]
+
+    def post(self, request):
+        file = request.FILES.get("file")
+        if not file:
+            return Response(
+                {"detail": "file is required"}, status=status.HTTP_400_BAD_REQUEST
+            )
+
+        created = updated = skipped = 0
+        reader = csv.DictReader(TextIOWrapper(file.file, encoding="utf-8"))
+        for i, row in enumerate(reader, start=1):
+            name = (row.get("name") or "").strip()
+            email = (row.get("email") or "").strip()
+            tags = (row.get("tags") or "").strip()
+            if not email:
+                skipped += 1
+                continue
+            try:
+                validate_email(email)
+            except DjangoValidationError:
+                skipped += 1
+                continue
+
+            obj, was_created = Contact.objects.update_or_create(
+                user=request.user,
+                email=email,
+                defaults={"name": name or email.split("@")[0], "tags": tags},
+            )
+            if was_created:
+                created += 1
+            else:
+                updated += 1
+
+        return Response({"created": created, "updated": updated, "skipped": skipped})

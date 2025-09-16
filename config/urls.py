@@ -13,9 +13,11 @@ from crm.views import (
     MeView,
     DealsExportCSV,
     DealsStatsView,
+    ContactsImportCSV,
 )
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from crm.auth_views import ThrottledTokenObtainPairView, ThrottledTokenRefreshView
+from rest_framework_simplejwt.views import TokenRefreshView, TokenObtainPairView
 
 
 class RunDigestView(APIView):
@@ -48,4 +50,11 @@ urlpatterns = [
     path("api/stats/deals/", DealsStatsView.as_view(), name="deals_stats"),
     path("healthz", lambda r: HttpResponse("ok")),
     path("api/admin/run-weekly-digest", RunDigestView.as_view()),
+    path(
+        "api/token/", ThrottledTokenObtainPairView.as_view(), name="token_obtain_pair"
+    ),
+    path(
+        "api/token/refresh/", ThrottledTokenRefreshView.as_view(), name="token_refresh"
+    ),
+    path("api/imports/contacts/", ContactsImportCSV.as_view(), name="contacts_import"),
 ]

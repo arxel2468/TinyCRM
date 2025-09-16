@@ -10,13 +10,13 @@ Welcome to the TinyCRM API — a powerful, secure, and flexible Customer Relatio
 
 ## API Documentation
 
-- **Documentation Endpoint:** `/api/docs`  
+- **Documentation Endpoint:** `/api/docs`
   Explore the interactive API docs, request samples, and detailed endpoint descriptions.
 
 ## Authentication
 
-- **JWT Authentication:**  
-  Obtain a token via the `/api/token` endpoint with your credentials.  
+- **JWT Authentication:**
+  Obtain a token via the `/api/token` endpoint with your credentials.
   Use the token in the `Authorization` header as `Bearer <token>` for authenticated requests.
 
 ### Sample Authentication Request
