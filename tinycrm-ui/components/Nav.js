@@ -8,6 +8,7 @@ export default function Nav() {
       <Link href="/companies" style={{ marginRight: 12 }}>Companies</Link>
       <Link href="/deals" style={{ marginRight: 12 }}>Deals</Link>
       <Link href="/stats" style={{ marginRight: 12 }}>Stats</Link>
+      <Link href="/kanban" className="mr-3">Kanban</Link>
       <button onClick={() => { clearToken(); window.location.href = "/login"; }}>
         Logout
       </button>
