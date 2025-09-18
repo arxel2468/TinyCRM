@@ -15,8 +15,12 @@ from .models import Contact, Company, Deal
 from .serializers import ContactSerializer, CompanySerializer, DealSerializer
 from .filters import ContactFilter, CompanyFilter, DealFilter
 from .pagination import StandardResultsPagination
+from crm.infra.idempotency import idempotent_post
+
+
 import csv
 from io import StringIO, TextIOWrapper
+from django.core.cache import cache
 
 
 class IsOwner(permissions.BasePermission):
@@ -48,6 +52,10 @@ class ContactViewSet(OwnedModelViewSet):
     ordering_fields = ["name", "email", "created_at", "updated_at"]
     ordering = ["-updated_at"]
 
+    @idempotent_post()
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
 
 class CompanyViewSet(OwnedModelViewSet):
     queryset = Company.objects.all()
@@ -56,6 +64,10 @@ class CompanyViewSet(OwnedModelViewSet):
     search_fields = ["name"]
     ordering_fields = ["name", "created_at"]
 
+    @idempotent_post()
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
+
 
 class DealViewSet(OwnedModelViewSet):
     queryset = Deal.objects.select_related("company").all()
@@ -63,6 +75,10 @@ class DealViewSet(OwnedModelViewSet):
     filterset_class = DealFilter
     search_fields = ["title", "company__name"]
     ordering_fields = ["amount", "updated_at", "close_date"]
+
+    @idempotent_post()
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)
 
 
 class MeView(APIView):
@@ -87,6 +103,11 @@ class DealsExportCSV(APIView):
         min_amount = request.GET.get("min_amount")
         if min_amount:
             qs = qs.filter(amount__gte=min_amount)
+
+        def safe_cell(v):
+            if isinstance(v, str) and v and v[0] in ("=", "+", "-", "@"):
+                return "'" + v
+            return v
 
         buffer = StringIO()
         writer = csv.writer(buffer)
@@ -129,15 +150,20 @@ class DealsStatsView(APIView):
             days = int(request.GET.get("days", "30"))
         except ValueError:
             days = 30
-        since = timezone.now() - timedelta(days=days)
-        qs = Deal.objects.filter(user=request.user, created_at__gte=since)
-        by_stage = list(
-            qs.values("stage")
-            .annotate(count=Count("id"), amount=Sum("amount"))
-            .order_by("stage")
-        )
-        totals = qs.aggregate(count=Count("id"), amount=Sum("amount"))
-        return Response({"range_days": days, "by_stage": by_stage, "totals": totals})
+        cache_key = f"stats:{request.user.id}:{days}"
+        data = cache.get(cache_key)
+        if not data:
+            since = timezone.now() - timedelta(days=days)
+            qs = Deal.objects.filter(user=request.user, created_at__gte=since)
+            by_stage = list(
+                qs.values("stage")
+                .annotate(count=Count("id"), amount=Sum("amount"))
+                .order_by("stage")
+            )
+            totals = qs.aggregate(count=Count("id"), amount=Sum("amount"))
+            data = {"range_days": days, "by_stage": by_stage, "totals": totals}
+            cache.set(cache_key, data, 30)
+        return Response(data)
 
 
 class ContactsImportCSV(APIView):

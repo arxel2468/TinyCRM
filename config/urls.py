@@ -38,6 +38,14 @@ router.register(r"contacts", ContactViewSet, basename="contact")
 router.register(r"companies", CompanyViewSet, basename="company")
 router.register(r"deals", DealViewSet, basename="deal")
 
+
+v1_patterns = [
+    path("", include(router.urls)),
+    path("exports/deals.csv", DealsExportCSV.as_view()),
+    path("imports/contacts/", ContactsImportCSV.as_view()),
+    path("stats/deals/", DealsStatsView.as_view()),
+]
+
 urlpatterns = [
     path("admin /", admin.site.urls),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
@@ -57,4 +65,5 @@ urlpatterns = [
         "api/token/refresh/", ThrottledTokenRefreshView.as_view(), name="token_refresh"
     ),
     path("api/imports/contacts/", ContactsImportCSV.as_view(), name="contacts_import"),
+    path("api/v1/", include((v1_patterns, "api"), namespace="v1")),
 ]

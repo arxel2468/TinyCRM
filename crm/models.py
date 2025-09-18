@@ -18,6 +18,7 @@ class Contact(models.Model):
             models.UniqueConstraint(fields=["user", "email"], name="uniq_user_email"),
         ]
         ordering = ["-updated_at"]
+        indexes = [models.Index(fields=["user", "email"])]
 
     def __str__(self):
         return f"{self.name} <{self.email}"
@@ -61,6 +62,10 @@ class Deal(models.Model):
 
     class Meta:
         ordering = ["-updated_at"]
+        indexes = [
+            models.Index(fields=["user", "stage"]),
+            models.Index(fields=["user", "amount"]),
+        ]
 
     def __str__(self):
         return f"{self.title} ({self.company})"

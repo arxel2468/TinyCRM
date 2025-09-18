@@ -9,7 +9,9 @@ class RequestIdMiddleware:
     def __call__(self, request):
         rid = request.headers.get("X-Request-ID") or uuid.uuid4().hex
         token = request_id_var.set(rid)
-        response = self.get_response(request)
-        request_id_var.reset(token)
+        try:
+            response = self.get_response(request)
+        finally:
+            request_id_var.reset(token)
         response["X-Request-ID"] = rid
         return response

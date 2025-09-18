@@ -206,14 +206,14 @@ LOGGING = {
     "formatters": {
         "verbose": {
             "format": "%(asctime)s %(levelname)s [%(request_id)s] %(name)s: %(message)s"
-        },
+        }
     },
     "handlers": {
         "console": {
             "class": "logging.StreamHandler",
             "filters": ["request_id"],
             "formatter": "verbose",
-        },
+        }
     },
     "root": {"handlers": ["console"], "level": "INFO"},
 }
